@@ -3,6 +3,9 @@ import os
 
 class Config(object):
     def __init__(self, opt):
+        self.meta_handler = None
+        self.outfile_format = "CSV"
+
         self.config_dir = opt.config_dir
         if (not os.path.isdir(self.config_dir)):
             print "config_dir is not a directory."
@@ -28,3 +31,9 @@ class Config(object):
             return True
         else:
             return False
+
+    def init_meta_handler(self):
+        metadata_parse = MetaDataParser(self.sack_types_file, self.sack_dynamic_file)
+        metadata_format = MetaDataTxtCsvFormat(self.outfile_format)
+
+        self.meta_handler = [metadata_parse, metadata_format]
