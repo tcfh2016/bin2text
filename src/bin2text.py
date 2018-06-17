@@ -2,30 +2,30 @@
 
 import  argparse
 
-import  config
-import  handler
+import  bin_config
+import  bin_parser
 
 # command line pattern:
 # python bin2text.py --config-dir profile_directory --bin bin_file --type csv
 def parse_args():
 
-    parser = argparse.ArgumentParser()
+    arg_parser = argparse.ArgumentParser()
 
-    parser.add_argument("--config-dir", required=True,
+    arg_parser.add_argument("--config-dir", required=True,
                         help="specify the profile directory.")
-    parser.add_argument("--bin", required=True,
+    arg_parser.add_argument("--bin", required=True,
                         help="bin file which needed to be parsed.")
-    parser.add_argument("--type", default='csv',
+    arg_parser.add_argument("--type", default='csv',
                         help="target file format.")
 
-    return parser.parse_args()
+    return arg_parser.parse_args()
 
 def main():
     opt = parse_args()
 
-    cfg = config.Config(opt)
-    parser = handler.Handler(cfg)
-    parser.parse()
+    cfg = bin_config.Config(opt)
+    par = bin_parser.Parser(cfg)
+    par.parse()
 
 if __name__ == "__main__":
     main()

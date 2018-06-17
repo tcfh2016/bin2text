@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 import os
 
+import metadata_handler
+import txtcsv_format_handler
+
 class Config(object):
     def __init__(self, opt):
+        self.metadata = None
         self.meta_handler = None
         self.outfile_format = "CSV"
 
@@ -33,7 +37,12 @@ class Config(object):
             return False
 
     def init_meta_handler(self):
-        metadata_parse = MetaDataParser(self.sack_types_file, self.sack_dynamic_file)
-        metadata_format = MetaDataTxtCsvFormat(self.outfile_format)
-
+        metadata_parse = self.get_metadata()
+        metadata_format = txtcsv_format_handler.TxtCsvFormatHandler(self.outfile_format)
         self.meta_handler = [metadata_parse, metadata_format]
+
+    # May call multiply times, use 'metadata' to keep only contruct once.
+    def get_metadata(self):
+        if self.metadata is None:
+            self.metadata = metadata_handler.MetaDataHandler(self.sack_types_file, self.sack_dynamic_file)
+        return self.metadata
