@@ -7,9 +7,7 @@ class LineType(object):
     Struct             = "S"
     StructField        = "F"
 
-    EnumValue          = "E"
     Constant           = "C"
-    ConstantGlobal     = "G"
 
 
 class Tag(object):

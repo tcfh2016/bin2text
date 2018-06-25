@@ -46,15 +46,11 @@ class MetaDataHandler(handler.Handler):
             self._parse_message(items)
         elif line_type == datatype.LineType.DefinedStructField:
             self._parse_message_field(items)
-            pass
         elif line_type == datatype.LineType.Struct:
-            #self._parse_struct(item_list)
-            pass
+            self._parse_struct(items)
         elif line_type == datatype.LineType.StructField:
-            #self._parse_struct_field(item_list)
-            pass
-
-        elif line_type in (datatype.LineType.EnumValue, datatype.LineType.Constant, datatype.LineType.ConstantGlobal):
+            self._parse_struct_field(items)
+        elif line_type == datatype.LineType.Constant:
             self._parse_enum(items)
         else:
             pass
@@ -106,34 +102,22 @@ class MetaDataHandler(handler.Handler):
 
         self._parse_field(items, meta_message)
 
-    def _parse_field(self, items, meta_data):
-        # STEP 1:
-        field_meta, fields_name = self._get_field_meta(items, meta_data, 1)
+    #    4710,    S,    EState,    ,    ,    4,    1,    0,    4,    1,    2,    0,    0,    0,    0,    1,    0,    0,    ""
+    #       0,    1,         2,   3,   4,    5,    6,    7,    8,    9,   10,   11,   12,   13,   14,   15,   16,   17,    18
+    # order,  line    typename,    ,field type   tag      ,size ,     ,element    ,     ,     ,     ,     ,     ,     ,     ,
+    #         type,                 type,  tag, info,                   count,
 
-        # STEP 2:
-        type_name = items[2]
-        field_name = items[3]
-        field_type_name = items[4]
-
-        # STEP 3:
+    def _parse_struct(self, items):
+        pass
 
 
-    # recursive function to get field meta data.
-    def _get_field_meta(self, items, meta_data, parse_level):
-        field_level = items[14]
-        assert field_level < 32
+    #    928,    M,    43CF,    msgHeader,    SMessageHeader,    17,    0,    0,    16,    0,    5,    0,    0,    0,    1,    1,    0,    37,    ""
+    #      0,    1,       2,            3,                 4,     5,    6,    7,     8,    9,   10,   11,   12,   13,   14,   15,   16,    17,    18
+    # order,  line  message    field name,        field type,      ,     , byte   size,     ,     ,     ,     ,     ,     ,     ,     ,      ,
+    #         type,      id,                                             offset,
 
-        if field_level == parse_level:
-            return meta_data, ""
-
-        if isinstance(meta_data, metadata.MetadataArray):
-            return meta_data, ""
-        elif isinstance(meta_data, (metadata.MetadataStruct,
-                                    metadata.MetadataUnion,
-                                    metadata.MetadataMessage)):
-            return meta_data, ""
-        else:
-            return meta_data, ""
+    def _parse_struct_field(self, items):
+        pass
 
 
     #    90,    C,    EStatusLte,    EStatusLte_Ok,    ,    4,    7,    0,    0,    0,    0,    3,    0,    0,    1,    0,    0,    0,    ""
@@ -172,3 +156,32 @@ class MetaDataHandler(handler.Handler):
             return True
         except:
             return False
+
+
+    def _parse_field(self, items, meta_data):
+        # STEP 1:
+        field_meta, fields_name = self._get_field_meta(items, meta_data, 1)
+
+        # STEP 2:
+        type_name = items[2]
+        field_name = items[3]
+        field_type_name = items[4]
+
+        # STEP 3:
+
+    # recursive function to get field meta data.
+    def _get_field_meta(self, items, meta_data, parse_level):
+        field_level = items[14]
+        assert field_level < 32
+
+        if field_level == parse_level:
+            return meta_data, ""
+
+        if isinstance(meta_data, metadata.MetadataArray):
+            return meta_data, ""
+        elif isinstance(meta_data, (metadata.MetadataStruct,
+                                    metadata.MetadataUnion,
+                                    metadata.MetadataMessage)):
+            return meta_data, ""
+        else:
+            return meta_data, ""
