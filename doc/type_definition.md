@@ -103,6 +103,84 @@ order,linetype,      type name,      field name,    ,     ,     ,     ,     ,   
 order,  line           type name,field name,field type,      ,     ,     , size,     ,     ,     ,     ,     ,     ,     ,     ,      ,      
         type,
 
+类型解析算法：
+
+首先： 递归找到最底层的“S”类型。
+其次： 将其存储到字典中。
+
+注：
+① 如果field的自定义类型不为空，相当于表明这些字段已经在之前定义过，那么此时metadata就为空。
+② 如果field的自定义类型为空，共有12种类型，还需要进一步解析（类似于解析“S”类型）：
+	0,1 --> INT8	
+	2   --> UINT16
+	3   --> INT16
+	4   --> UINT32	
+	5   --> INT32
+	14  --> ARRAY   -->
+	15  --> POINTER -->
+	17  --> STRUCT  -->
+	18  --> UNION	  -->
+	26  --> UINT64
+	27  --> INT64
+         
+
+解析举例一：
+
+```
+29,S,SMessageAddress,,,17,0,0,4,0,3,3,0,0,0,1,0,0,""
+30,F,SMessageAddress,board,TBoard,0,0,0,1,0,0,0,0,0,1,1,0,26,""
+31,F,SMessageAddress,cpu,TCpu,0,0,1,1,0,0,0,0,0,1,1,0,27,""
+32,F,SMessageAddress,task,TTask,2,0,2,2,0,0,0,0,0,1,1,0,28,""
+```
+
+解析得到 struct_object{SMessageAddress, 4字节, 3个成员, 0个array成员,[object1, object2, object3]}
+
+- object1为第1个字段创建的对象 field_object1{board, TBoard, 类型0, metadata, 字节偏移0, 字段大小1字节}
+- object2为第2个字段创建的对象 field_object2{cpu,   TCpu,   类型0, metadata, 字节偏移1, 字段大小1字节}
+- object3为第3个字段创建的对象 field_object3{task,  TTask,  类型2, metadata, 字节偏移2, 字段大小2字节}
+
+
+
+解析举例二：
+
+```
+34,S,SHeaderFlags,,,17,0,0,2,0,2,2,0,0,0,1,0,0,""
+35,F,SHeaderFlags,system,,0,0,0,1,0,0,0,0,0,1,0,0,0,"reserved for transportation/platform layer (checksum etc)"
+36,F,SHeaderFlags,user,,0,0,1,1,0,0,0,0,0,1,0,0,0,"reserved for application layer, transported "as is"."
+```
+
+解析得到 struct_object{SHeaderFlags, 2字节, 2个成员, 0个array成员,[object1, object2]}
+
+- object1为第1个字段创建的对象 field_object1{system, "", 类型0, metadata, 字节偏移0, 字段大小1字节}
+- object2为第2个字段创建的对象 field_object2{user,   "", 类型0, metadata, 字节偏移1, 字段大小1字节}
+
+注：此时field自定义的类型为""，用 metadata。
+
+
+
+568	S	SMacPsL2Addresses			17	0	0	584	0	11	20	0	0	0	1	0	0
+569	F	SMacPsL2Addresses	numOfUeGroupsPerPool		4	0	0	4	0	0	0	0	0	1	0	0	0
+570	F	SMacPsL2Addresses	dataCtrlDlData		14	0	4	64	0	16	0	0	0	1	1	0	0
+571	F	SMacPsL2Addresses	dataCtrlDlData	TAaSysComSicad	4	0	0	4	0	0	0	0	0	2	1	0	504
+572	F	SMacPsL2Addresses	dataCtrlUl		14	0	68	64	0	16	0	0	0	1	1	0	0
+573	F	SMacPsL2Addresses	dataCtrlUl	TAaSysComSicad	4	0	0	4	0	0	0	0	0	2	1	0	504
+574	F	SMacPsL2Addresses	dataCtrlDiscard		14	0	132	64	0	16	0	0	0	1	1	0	0
+575	F	SMacPsL2Addresses	dataCtrlDiscard	TAaSysComSicad	4	0	0	4	0	0	0	0	0	2	1	0	504
+576	F	SMacPsL2Addresses	ueCtrlFeedback		14	0	196	64	0	16	0	0	0	1	1	0	0
+577	F	SMacPsL2Addresses	ueCtrlFeedback	TAaSysComSicad	4	0	0	4	0	0	0	0	0	2	1	0	504
+578	F	SMacPsL2Addresses	puschReceiveRespUSicad		14	0	260	64	0	16	0	0	0	1	1	0	0
+579	F	SMacPsL2Addresses	puschReceiveRespUSicad	TAaSysComSicad	4	0	0	4	0	0	0	0	0	2	1	0	504
+580	F	SMacPsL2Addresses	puschReceiveRespUQueue		14	0	324	64	0	16	0	0	0	1	1	0	0
+581	F	SMacPsL2Addresses	puschReceiveRespUQueue		4	0	0	4	0	0	0	0	0	2	0	0	0
+582	F	SMacPsL2Addresses	dataCtrlDlDataQueue		14	0	388	64	0	16	0	0	0	1	1	0	0
+583	F	SMacPsL2Addresses	dataCtrlDlDataQueue		4	0	0	4	0	0	0	0	0	2	0	0	0
+584	F	SMacPsL2Addresses	dataCtrlUlQueue		14	0	452	64	0	16	0	0	0	1	1	0	0
+585	F	SMacPsL2Addresses	dataCtrlUlQueue		4	0	0	4	0	0	0	0	0	2	0	0	0
+586	F	SMacPsL2Addresses	dataCtrlDiscardQueue		14	0	516	64	0	16	0	0	0	1	1	0	0
+587	F	SMacPsL2Addresses	dataCtrlDiscardQueue		4	0	0	4	0	0	0	0	0	2	0	0	0
+588	F	SMacPsL2Addresses	poolId	TPoolId	4	0	580	4	0	0	0	0	0	1	1	0	428
+				
+				
 4. 类型D
 
 -  第0项：行序号。

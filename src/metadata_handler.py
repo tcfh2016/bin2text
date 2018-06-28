@@ -194,27 +194,27 @@ class MetaDataHandler(handler.Handler):
 
     def _parse_field(self, items, meta_struct):
         # items 对应“F”行。
-        # meta_data 对应从“S”行解析出来的 MetadataStruct/MetadataUnion/MetadataArray/MetadataEnum
+        # meta_struct 对应从“S”行解析出来的 MetadataStruct/MetadataUnion/MetadataArray/MetadataEnum
+        # 算法目的：将所有自定义的类型收集起来。
+        # 算法逻辑：
+        # 1. 递归找到最底层的“S”类型
+        # 2. 将其存储到 self._metadata 字典中
+        # 举例：
 
         raw_field_meta, fields_name = self._get_field_meta(items, meta_struct, 1)
 
-        # STEP 2:
+        # 解析当前字段对应的meta
         blongs_struct_name = items[2]
         field_name = items[3]
         field_type_name = items[4]
         field_struct_type = items[5]
 
-        # 匿名结构体、联合的处理。
-        if field_type_name == ""  and field_struct_type in (datatype.StructType.UNION, datatype.StructType.UNION):
-            pass
-
-        #
         field_meta = self._parse_field_meta(items, raw_field_meta, field_type_name, field_struct_type)
 
         if isinstance(raw_field_meta, (metadata.MetadataStruct)):
-            field_offset = items[7]
+            field_byte_offset = items[7]
             field_size = items[8]
-            raw_field_meta.add_field(field_name, field_type_name, field_struct_type, field_meta, field_offset, field_size)
+            raw_field_meta.add_field(field_name, field_type_name, field_struct_type, field_meta, field_byte_offset, field_size)
         else:
             pass
 
@@ -237,5 +237,30 @@ class MetaDataHandler(handler.Handler):
         '''
 
     def _parse_field_meta(self, items, meta_data, field_type_name, field_struct_type):
+        meta_result = None
+        struct_size = items[8]          # 类型大小（字节）
+        struct_field_number = items[10] # 包含的成员个数，自定义类型成员个数 > 0
+
         if field_type_name != "":
             return None
+        elif field_struct_type == datatype.StructType.STRUCT:
+            field_number = items[10]
+            field_number_plus_array_elementnumber = items[11]
+            array_field_num = field_number_plus_array_elementnumber - struct_field_number
+            meta_result = metadata.MetadataStruct(type_name,
+                                                  struct_size,
+                                                  struct_field_number,
+                                                  array_field_num)
+
+        elif field_struct_type == datatype.StructType.ARRAY:
+            meta_result = metadata.MetadataArray(field_type_name, struct_size, struct_field_number)
+        elif struct_type == datatype.StructType.UNION:
+            meta_result = metadata.MetadataArray(field_type_name, struct_size, struct_field_number)
+        else:
+            type_info = items[6]
+            if type_info == datatype.StructTypeInfo.RANGE:
+                pass
+            else:
+                meta_struct = metadata.MetadataBasicType(field_struct_type)
+
+        return meta_struct

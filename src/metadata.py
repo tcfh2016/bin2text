@@ -1,7 +1,31 @@
 # -*- coding: utf-8 -*-
 
+import datatype
+
 class Metadata(object):
     pass
+
+class MetadataBasicType(object):
+    basic_type_info = {
+        datatype.StructType.UINT8:       ("_anon_uint8", 1, "B"),
+        datatype.StructType.UINT16:      ("_anon_uint16", 2, "H"),
+        datatype.StructType.UINT32:      ("_anon_uint32", 4, "I"),
+        datatype.StructType.UINT64:      ("_anon_uint64", 8, "Q"),
+        datatype.StructType.UINT128:     ("_anon_uint128", 16, "QQ"),
+
+        datatype.StructType.INT8:        ("_anon_int8", 1, "b"),
+        datatype.StructType.INT16:       ("_anon_int16", 2, "h"),
+        datatype.StructType.INT32:       ("_anon_int32", 4, "i"),
+        datatype.StructType.INT64:       ("_anon_int64", 8, "q"),
+        datatype.StructType.INT128:      ("_anon_int128", 16, "qq"),
+
+        datatype.StructType.BOOL:        ("_anon_bool", 1, "?"),
+        datatype.StructType.FLOAT:        ("_anon_real", 4, "f"),
+        datatype.StructType.DOUBLE:  ("_anon_doublereal", 8, "d"),
+    }
+
+    def __init__(self, field_struct_type):
+        (self._name, self._size, self._alia) = self.basic_type_info[field_struct_type]
 
 class MetadataArray(Metadata):
     def __init__(self, name, size, field_number):
