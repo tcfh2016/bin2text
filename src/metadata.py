@@ -28,10 +28,11 @@ class MetadataBasicType(object):
         (self._name, self._size, self._alia) = self.basic_type_info[field_struct_type]
 
 class MetadataArray(Metadata):
-    def __init__(self, name, size, field_number):
+    def __init__(self, name, size, element_number, element_metadata=None):
         self._name = name
         self._size = size
-        self._field_number = field_number
+        self._element_number = element_number
+        self._element_metadata = element_metadata
 
 class MetadataStruct(Metadata):
     def __init__(self, name, size, field_number, array_field_number):

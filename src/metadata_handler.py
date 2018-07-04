@@ -195,7 +195,7 @@ class MetaDataHandler(handler.Handler):
     def _parse_field(self, items, meta_struct):
         # items 对应“F”行。
         # meta_struct 对应从“S”行解析出来的 MetadataStruct/MetadataUnion/MetadataArray/MetadataEnum
-        # 算法目的：将所有自定义的类型收集起来。
+        # 算法目的：将所有隶属于“S”的字段收集起来。
         # 算法逻辑：
         # 1. 递归找到最底层的“S”类型
         # 2. 将其存储到 self._metadata 字典中
@@ -225,6 +225,14 @@ class MetaDataHandler(handler.Handler):
 
         if field_level == parse_level:
             return meta_data, ""
+
+        if isinstance(meta_data, metadata.MetadataStruct):
+            meta = self._get_field_meta(items, meta_data._fields[-1].metadata, parse_level + 1)
+            return meta
+        elif isinstance(meta_data, metadata.MetadataArray):
+            return self._get_field_meta(items, meta_data.element_metadata, parse_level + 1)
+        else:
+            return meta
         '''
         if isinstance(meta_data, metadata.MetadataArray):
             return meta_data, ""

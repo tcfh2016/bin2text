@@ -118,7 +118,7 @@ order,  line           type name,field name,field type,      ,     ,     , size,
 	5   --> INT32
 	14  --> ARRAY   -->
 	15  --> POINTER -->
-	17  --> STRUCT  -->
+	17  --> STRUCT  --> 再创建object
 	18  --> UNION	  -->
 	26  --> UINT64
 	27  --> INT64
