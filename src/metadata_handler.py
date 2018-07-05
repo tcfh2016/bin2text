@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 import re
+import logging
 
 import handler
 import datatype
 import metadata
 
+
 class MetaDataHandler(handler.Handler):
     def __init__(self, types_file, dynamic_file):
+        self.logger = logging.getLogger(__name__)
         self._type_filename = types_file
         self._dynamic_filename = dynamic_file
         self._metadata_message = {}
@@ -42,6 +45,8 @@ class MetaDataHandler(handler.Handler):
 
     def _parse_item(self, items):
         line_type = items[1]
+
+        self.logger.info("MetaDataHandler._parse_item:[%s]" % (items))
 
         if line_type == datatype.LineType.DefinedStruct:
             self._parse_message(items)
@@ -138,6 +143,8 @@ class MetaDataHandler(handler.Handler):
         struct_size = items[8]          # 类型大小（字节）
         struct_field_number = items[10] # 包含的成员个数，自定义类型成员个数 > 0
 
+        self.logger.info("MetaDataHandler._parse_struct:[%s]" % (items))
+
         if struct_type == datatype.StructType.ARRAY:
             meta_array = metadata.MetadataArray(type_name, struct_size, struct_field_number)
             self._metadata[type_name] = meta_array
@@ -160,6 +167,7 @@ class MetaDataHandler(handler.Handler):
             else:
                 print "UNKNOW DATA TYPE."
 
+        self.logger.info("MetaDataHandler._parse_struct:_metadata[%s]=%s" % (type_name, self._metadata[type_name]))
 
     #    928,    M,    43CF,    msgHeader,    SMessageHeader,    17,    0,    0,    16,    0,    5,    0,    0,    0,    1,    1,    0,    37,    ""
     #      0,    1,       2,            3,                 4,     5,    6,    7,     8,    9,   10,   11,   12,   13,   14,   15,   16,    17,    18
@@ -201,7 +209,7 @@ class MetaDataHandler(handler.Handler):
         # 2. 将其存储到 self._metadata 字典中
         # 举例：
 
-        raw_field_meta, fields_name = self._get_field_meta(items, meta_struct, 1)
+        raw_field_meta = self._get_field_meta(items, meta_struct, 1)
 
         # 解析当前字段对应的meta
         blongs_struct_name = items[2]
@@ -224,25 +232,14 @@ class MetaDataHandler(handler.Handler):
         assert field_level < 32
 
         if field_level == parse_level:
-            return meta_data, ""
+            return meta_data
 
         if isinstance(meta_data, metadata.MetadataStruct):
-            meta = self._get_field_meta(items, meta_data._fields[-1].metadata, parse_level + 1)
-            return meta
+            return self._get_field_meta(items, meta_data._fields[-1].metadata, parse_level + 1)
         elif isinstance(meta_data, metadata.MetadataArray):
             return self._get_field_meta(items, meta_data.element_metadata, parse_level + 1)
         else:
             return meta
-        '''
-        if isinstance(meta_data, metadata.MetadataArray):
-            return meta_data, ""
-        elif isinstance(meta_data, (metadata.MetadataStruct,
-                                    metadata.MetadataUnion,
-                                    metadata.MetadataMessage)):
-            return meta_data, ""
-        else:
-            return meta_data, ""
-        '''
 
     def _parse_field_meta(self, items, meta_data, field_type_name, field_struct_type):
         meta_result = None

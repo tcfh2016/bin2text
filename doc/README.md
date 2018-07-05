@@ -119,7 +119,7 @@ order,  line           type name,field name,field type,      ,     ,     , size,
 	14  --> ARRAY   -->
 	15  --> POINTER -->
 	17  --> STRUCT  --> 再创建object
-	18  --> UNION	  -->
+	18  --> UNION	-->
 	26  --> UINT64
 	27  --> INT64
          
@@ -135,10 +135,14 @@ order,  line           type name,field name,field type,      ,     ,     , size,
 
 解析得到 struct_object{SMessageAddress, 4字节, 3个成员, 0个array成员,[object1, object2, object3]}
 
-- object1为第1个字段创建的对象 field_object1{board, TBoard, 类型0, metadata, 字节偏移0, 字段大小1字节}
-- object2为第2个字段创建的对象 field_object2{cpu,   TCpu,   类型0, metadata, 字节偏移1, 字段大小1字节}
-- object3为第3个字段创建的对象 field_object3{task,  TTask,  类型2, metadata, 字节偏移2, 字段大小2字节}
+- object1为第1个字段创建的对象 field_object1{board, TBoard, 类型0, field1_metadata, 字节偏移0, 字段大小1字节}
+	- field1_metadata = ""
+- object2为第2个字段创建的对象 field_object2{cpu,   TCpu,   类型0, field2_metadata, 字节偏移1, 字段大小1字节}
+	- field2_metadata = ""
+- object3为第3个字段创建的对象 field_object3{task,  TTask,  类型2, field3_metadata, 字节偏移2, 字段大小2字节}
+	- field3_metadata = ""
 
+注：其中的metadata包含了对field_object里面的“类型”所做的解释，由于当前field的类型不为空，说明该类型已经在之前定义，metadata为空。
 
 
 解析举例二：
@@ -151,8 +155,10 @@ order,  line           type name,field name,field type,      ,     ,     , size,
 
 解析得到 struct_object{SHeaderFlags, 2字节, 2个成员, 0个array成员,[object1, object2]}
 
-- object1为第1个字段创建的对象 field_object1{system, "", 类型0, metadata, 字节偏移0, 字段大小1字节}
-- object2为第2个字段创建的对象 field_object2{user,   "", 类型0, metadata, 字节偏移1, 字段大小1字节}
+- object1为第1个字段创建的对象 field_object1{system, "", 类型0, field1_metadata, 字节偏移0, 字段大小1字节}
+	- field1_metadata = MetadataBasicType("_anon_uint8", 1, "B")
+- object2为第2个字段创建的对象 field_object2{user,   "", 类型0, field2_metadata, 字节偏移1, 字段大小1字节}
+	- field2_metadata = MetadataBasicType("_anon_uint8", 1, "B")
 
 注：此时field自定义的类型为""，用 metadata。
 

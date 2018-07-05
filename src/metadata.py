@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datatype
+import logging
 
 class Metadata(object):
     pass
@@ -45,12 +46,17 @@ class MetadataStruct(Metadata):
 
         if array_field_number > 0:
             self._has_array_field = True
+    def __str__(self):
+        return ("MetadataStruct(_name:%s, _size:%d, _field_number:%d, _array_field_number:%d, _fields:%s)" %
+                          (self._name, self._size, self._field_number, self._array_field_number, self._fields))
 
     def add_field(self, name, type_name, field_struct_type, meta, offset, size):
         new_field = Field(self._field_number, name, type_name, field_struct_type,
                           meta, offset, size)
         self._fields.append(new_field)
         self._field_number += 1
+        self.logger.info("MetadataStruct.add_field:[%s,%s,%s,%s,%d,%d] _field_number=%" %
+                         (name, type_name, field_struct_type, meta, offset, size, self._field_number))
 
 
 class MetadataUnion(Metadata):
