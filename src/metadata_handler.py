@@ -181,10 +181,11 @@ class MetaDataHandler(handler.Handler):
         meta_struct = self._metadata[belongs_struct_name]
         self._parse_field(items, meta_struct)
 
+        self.logger.info("MetaDataHandler._parse_struct_field:meta_struct=%s" % (meta_struct))
 
     def _valid_items(self, items):
         if len(items) != self._specified_item_num:
-            print "items number excess %d" % self._specified_item_num
+            self.logger.error("MetaDataHandler._valid_items:items number expected to be %d, but %d" % (self._specified_item_num, len(items)))
             return False
         try:
             items[5] = int(items[5])
@@ -218,6 +219,8 @@ class MetaDataHandler(handler.Handler):
         field_struct_type = items[5]
 
         field_meta = self._parse_field_meta(items, raw_field_meta, field_type_name, field_struct_type)
+        self.logger.info("MetaDataHandler._parse_field:raw_field_meta=%s" % (raw_field_meta))
+        self.logger.info("MetaDataHandler._parse_field:field_meta=%s" % (field_meta))
 
         if isinstance(raw_field_meta, (metadata.MetadataStruct)):
             field_byte_offset = items[7]
@@ -225,6 +228,7 @@ class MetaDataHandler(handler.Handler):
             raw_field_meta.add_field(field_name, field_type_name, field_struct_type, field_meta, field_byte_offset, field_size)
         else:
             pass
+
 
     # recursive function to get field meta data.
     def _get_field_meta(self, items, meta_data, parse_level):
@@ -259,7 +263,7 @@ class MetaDataHandler(handler.Handler):
 
         elif field_struct_type == datatype.StructType.ARRAY:
             meta_result = metadata.MetadataArray(field_type_name, struct_size, struct_field_number)
-        elif struct_type == datatype.StructType.UNION:
+        elif field_struct_type == datatype.StructType.UNION:
             meta_result = metadata.MetadataArray(field_type_name, struct_size, struct_field_number)
         else:
             type_info = items[6]

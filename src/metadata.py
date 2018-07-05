@@ -28,6 +28,11 @@ class MetadataBasicType(object):
     def __init__(self, field_struct_type):
         (self._name, self._size, self._alia) = self.basic_type_info[field_struct_type]
 
+    def __eq__(self, another):
+        return ((self._name == another._name) and
+                (self._size == another._size) and
+                (self._alia == another._alia))
+
 class MetadataArray(Metadata):
     def __init__(self, name, size, element_number, element_metadata=None):
         self._name = name
@@ -37,11 +42,13 @@ class MetadataArray(Metadata):
 
 class MetadataStruct(Metadata):
     def __init__(self, name, size, field_number, array_field_number):
+        self.logger = logging.getLogger(__name__)
         self._name = name
         self._size = size
         self._field_number = field_number
         self._array_field_number = array_field_number
         self._has_array_field = False
+        self._parsed_field_counter = 0
         self._fields = []
 
         if array_field_number > 0:
@@ -49,14 +56,20 @@ class MetadataStruct(Metadata):
     def __str__(self):
         return ("MetadataStruct(_name:%s, _size:%d, _field_number:%d, _array_field_number:%d, _fields:%s)" %
                           (self._name, self._size, self._field_number, self._array_field_number, self._fields))
+    def __eq__(self, another):
+        return ( (self._name == another._name) and
+                 (self._size == another._size) and
+                 (self._field_number == another._field_number) and
+                 (self._array_field_number == another._array_field_number) and
+                 (self._fields == another._fields) )
 
     def add_field(self, name, type_name, field_struct_type, meta, offset, size):
         new_field = Field(self._field_number, name, type_name, field_struct_type,
                           meta, offset, size)
         self._fields.append(new_field)
-        self._field_number += 1
-        self.logger.info("MetadataStruct.add_field:[%s,%s,%s,%s,%d,%d] _field_number=%" %
-                         (name, type_name, field_struct_type, meta, offset, size, self._field_number))
+        self._parsed_field_counter += 1
+        self.logger.info("MetadataStruct.add_field:[%s,%s,%s,%s,%d,%d] parsed_field_number=%d" %
+                         (name, type_name, field_struct_type, meta, offset, size, self._parsed_field_counter))
 
 
 class MetadataUnion(Metadata):

@@ -123,8 +123,8 @@ order,  line           type name,field name,field type,      ,     ,     , size,
 	26  --> UINT64
 	27  --> INT64
          
-
-解析举例一：
+		 
+解析举例1：自定义的类型的字段。
 
 ```
 29,S,SMessageAddress,,,17,0,0,4,0,3,3,0,0,0,1,0,0,""
@@ -145,7 +145,7 @@ order,  line           type name,field name,field type,      ,     ,     , size,
 注：其中的metadata包含了对field_object里面的“类型”所做的解释，由于当前field的类型不为空，说明该类型已经在之前定义，metadata为空。
 
 
-解析举例二：
+解析举例2：非自定义类型的字段-默认内建类型的字段（0,1,2,3,4,5,26,27）。
 
 ```
 34,S,SHeaderFlags,,,17,0,0,2,0,2,2,0,0,0,1,0,0,""
@@ -161,6 +161,14 @@ order,  line           type name,field name,field type,      ,     ,     , size,
 	- field2_metadata = MetadataBasicType("_anon_uint8", 1, "B")
 
 注：此时field自定义的类型为""，用 metadata。
+
+解析举例3：非自定义类型的字段-ARRAY（14）。
+
+解析举例4：非自定义类型的字段-POINTER（15）。
+
+解析举例5：非自定义类型的字段-STRUCT（17）。
+
+解析举例6：非自定义类型的字段-UNION（18）。
 
 
 
