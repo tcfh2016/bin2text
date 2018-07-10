@@ -160,9 +160,25 @@ order,  line           type name,field name,field type,      ,     ,     , size,
 - object2为第2个字段创建的对象 field_object2{user,   "", 类型0, field2_metadata, 字节偏移1, 字段大小1字节}
 	- field2_metadata = MetadataBasicType("_anon_uint8", 1, "B")
 
-注：此时field自定义的类型为""，用 metadata。
+注：此时field自定义的类型为""，因此需要使用默认后面的类型来进行解析，此时用 metadata来描述，这个例子中是“默认的内建类型”。
 
 解析举例3：非自定义类型的字段-ARRAY（14）。
+
+```
+550,S,SConfigurableUsageAddresses,,,17,0,0,196,0,2,3,0,0,0,1,0,0,""
+551,F,SConfigurableUsageAddresses,numOfConfigurableUsageAddresses,TNumberOfItems,4,0,0,4,0,0,0,0,0,1,1,0,427,""
+552,F,SConfigurableUsageAddresses,configurableUsageAddresses,,14,0,4,192,0,24,0,0,0,1,1,0,0,""
+553,F,SConfigurableUsageAddresses,configurableUsageAddresses,SAddressInfo,17,0,0,8,0,2,0,0,0,2,1,0,547,""
+```
+
+解析得到 struct_object{SConfigurableUsageAddresses, 196字节, 2个成员, 1个array成员, [object1, object2]}
+
+- object1为第1个字段创建的对象 field_object1{numOfConfigurableUsageAddresses, "TNumberOfItems", 类型4, field1_metadata, 字节偏移0, 字段大小4字节}
+	- field1_metadata = ""
+- object2为第2个字段创建的对象 field_object2{configurableUsageAddresses,   "", 类型14, field2_metadata, 字节偏移4, 字段大小192字节}
+	- field2_metadata = MetadataArray("", 192, 24, "") -- 24个元素。
+- 第3行的field，创建 MetadataStruct("SAddressInfo", 8, 2, 0)，并将其添加到之前的meta_data._fields[-1].metadata中。
+	
 
 解析举例4：非自定义类型的字段-POINTER（15）。
 

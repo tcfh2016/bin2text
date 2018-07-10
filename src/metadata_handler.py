@@ -165,7 +165,8 @@ class MetaDataHandler(handler.Handler):
                 meta_enum = metadata.MetadataEnum(type_name, struct_size, struct_field_number)
                 self._metadata[type_name] = meta_enum
             else:
-                print "UNKNOW DATA TYPE."
+                meta_basic_data = metadata.MetadataBasicType(type_info)
+                self._metadata[type_name] = meta_basic_data
 
         self.logger.info("MetaDataHandler._parse_struct:_metadata[%s]=%s" % (type_name, self._metadata[type_name]))
 
@@ -206,8 +207,10 @@ class MetaDataHandler(handler.Handler):
         # meta_struct 对应从“S”行解析出来的 MetadataStruct/MetadataUnion/MetadataArray/MetadataEnum
         # 算法目的：将所有隶属于“S”的字段收集起来。
         # 算法逻辑：
-        # 1. 递归找到最底层的“S”类型
-        # 2. 将其存储到 self._metadata 字典中
+        # 1. 递归找到最底层的“S”类型的metadata。
+        # 2. 并以该metadata来进行该“F”的解析。
+        # 注： 对于STRUCT取最近一个metadata（meta_data._fields[-1].metadata）是因为
+        # 对于嵌套的结构体来说会在之前就定义好该S。
         # 举例：
 
         raw_field_meta = self._get_field_meta(items, meta_struct, 1)
@@ -239,7 +242,7 @@ class MetaDataHandler(handler.Handler):
             return meta_data
 
         if isinstance(meta_data, metadata.MetadataStruct):
-            return self._get_field_meta(items, meta_data._fields[-1].metadata, parse_level + 1)
+            return self._get_field_meta(items, meta_data._fields[-1]._metadata, parse_level + 1)
         elif isinstance(meta_data, metadata.MetadataArray):
             return self._get_field_meta(items, meta_data.element_metadata, parse_level + 1)
         else:
@@ -253,13 +256,11 @@ class MetaDataHandler(handler.Handler):
         if field_type_name != "":
             return None
         elif field_struct_type == datatype.StructType.STRUCT:
-            field_number = items[10]
-            field_number_plus_array_elementnumber = items[11]
-            array_field_num = field_number_plus_array_elementnumber - struct_field_number
-            meta_result = metadata.MetadataStruct(type_name,
+            field_array_number = items[11]
+            meta_result = metadata.MetadataStruct(field_type_name,
                                                   struct_size,
                                                   struct_field_number,
-                                                  array_field_num)
+                                                  field_array_number)
 
         elif field_struct_type == datatype.StructType.ARRAY:
             meta_result = metadata.MetadataArray(field_type_name, struct_size, struct_field_number)
@@ -270,6 +271,6 @@ class MetaDataHandler(handler.Handler):
             if type_info == datatype.StructTypeInfo.RANGE:
                 pass
             else:
-                meta_struct = metadata.MetadataBasicType(field_struct_type)
+                meta_result = metadata.MetadataBasicType(field_struct_type)
 
-        return meta_struct
+        return meta_result

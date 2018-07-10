@@ -45,5 +45,19 @@ class MetaDataHandlerTestCase(unittest.TestCase):
         self.assertEqual(len(self.object._metadata["SHeaderFlags"]._fields), 2)
         self.assertEqual(self.object._metadata["SHeaderFlags"]._fields[0]._metadata, metadata.MetadataBasicType(f1[5]))
 
+    def test_parse_struct_with_array_fields(self):
+        s = [550,'S',"SConfigurableUsageAddresses","","",17,0,0,196,0,2,3,0,0,0,1,0,0,""]
+        f1 = [551,'F',"SConfigurableUsageAddresses","numOfConfigurableUsageAddresses","TNumberOfItems",4,0,0,4,0,0,0,0,0,1,1,0,427,""]
+        f2 = [552,'F',"SConfigurableUsageAddresses","configurableUsageAddresses","",14,0,4,192,0,24,0,0,0,1,1,0,0,""]
+        f3 = [553,'F',"SConfigurableUsageAddresses","configurableUsageAddresses","SAddressInfo",17,0,0,8,0,2,0,0,0,2,1,0,547,""]
+
+        map(lambda x:self.object._parse_item(x), [s, f1, f2, f3])
+
+        '''
+        self.assertEqual(self.object._metadata["SHeaderFlags"]._parsed_field_counter,
+                         self.object._metadata["SHeaderFlags"]._field_number)
+        self.assertEqual(len(self.object._metadata["SHeaderFlags"]._fields), 2)
+        self.assertEqual(self.object._metadata["SHeaderFlags"]._fields[0]._metadata, metadata.MetadataBasicType(f1[5]))
+        '''
 if __name__ == '__main__':
     unittest.main()
