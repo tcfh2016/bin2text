@@ -213,7 +213,7 @@ class MetaDataHandler(handler.Handler):
         # 对于嵌套的结构体来说会在之前就定义好该S。
         # 举例：
 
-        raw_field_meta = self._get_field_meta(items, meta_struct, 1)
+        bottom_2ndlevel_field_meta = self._get_field_meta(items, meta_struct, 1)
 
         # 解析当前字段对应的meta
         blongs_struct_name = items[2]
@@ -221,14 +221,16 @@ class MetaDataHandler(handler.Handler):
         field_type_name = items[4]
         field_struct_type = items[5]
 
-        field_meta = self._parse_field_meta(items, raw_field_meta, field_type_name, field_struct_type)
-        self.logger.info("MetaDataHandler._parse_field:raw_field_meta=%s" % (raw_field_meta))
-        self.logger.info("MetaDataHandler._parse_field:field_meta=%s" % (field_meta))
+        bottom_level_field_meta = self._parse_field_meta(items, bottom_2ndlevel_field_meta, field_type_name, field_struct_type)
+        self.logger.info("MetaDataHandler._parse_field:bottom_2ndlevel_field_meta=%s" % (bottom_2ndlevel_field_meta))
+        self.logger.info("MetaDataHandler._parse_field:bottom_level_field_meta=%s" % (bottom_level_field_meta))
 
-        if isinstance(raw_field_meta, (metadata.MetadataStruct)):
+        if isinstance(bottom_2ndlevel_field_meta, (metadata.MetadataStruct)):
             field_byte_offset = items[7]
             field_size = items[8]
-            raw_field_meta.add_field(field_name, field_type_name, field_struct_type, field_meta, field_byte_offset, field_size)
+            bottom_2ndlevel_field_meta.add_field(field_name, field_type_name, field_struct_type, bottom_level_field_meta, field_byte_offset, field_size)
+        elif isinstance(bottom_2ndlevel_field_meta, (metadata.MetadataArray)):
+            bottom_2ndlevel_field_meta._element_metadata = bottom_level_field_meta
         else:
             pass
 

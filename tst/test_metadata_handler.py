@@ -53,11 +53,13 @@ class MetaDataHandlerTestCase(unittest.TestCase):
 
         map(lambda x:self.object._parse_item(x), [s, f1, f2, f3])
 
-        '''
-        self.assertEqual(self.object._metadata["SHeaderFlags"]._parsed_field_counter,
-                         self.object._metadata["SHeaderFlags"]._field_number)
-        self.assertEqual(len(self.object._metadata["SHeaderFlags"]._fields), 2)
-        self.assertEqual(self.object._metadata["SHeaderFlags"]._fields[0]._metadata, metadata.MetadataBasicType(f1[5]))
-        '''
+        self.assertEqual(self.object._metadata["SConfigurableUsageAddresses"]._parsed_field_counter,
+                         self.object._metadata["SConfigurableUsageAddresses"]._field_number)
+        self.assertEqual(len(self.object._metadata["SConfigurableUsageAddresses"]._fields), 2)
+
+        expected_array = metadata.MetadataArray("", 192, 24, None)
+        #expected_array._element_metadata = metadata.MetadataStruct("", 192, 24, None)
+        self.assertEqual(self.object._metadata["SConfigurableUsageAddresses"]._fields[1]._metadata, expected_array)
+
 if __name__ == '__main__':
     unittest.main()

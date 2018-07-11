@@ -39,6 +39,14 @@ class MetadataArray(Metadata):
         self._size = size
         self._element_number = element_number
         self._element_metadata = element_metadata
+    def __str__(self):
+        return ("MetadataArray(_name:%s, _size:%d, _element_number:%d, _element_metadata:%s)" %
+                          (self._name, self._size, self._element_number, self._element_metadata))
+    def __eq__(self, another):
+        return ( (self._name == another._name) and
+                 (self._size == another._size) and
+                 (self._element_number == another._element_number) and
+                 (self._element_metadata == another._element_metadata))
 
 class MetadataStruct(Metadata):
     def __init__(self, name, size, field_number, array_field_number):
@@ -118,3 +126,6 @@ class Field(object):
         self._metadata = meta
         self._offset = offset
         self._size = size
+    def __str__(self):
+        return ("Field(_index, _name:%s, _typename:%s, _field_struct_type:%d, _metadata:%s, _offset:%d, _size:%d)" %
+                 (self._index, self._name, self._typename, self._field_struct_type, self._metadata, self._offset, self._size))

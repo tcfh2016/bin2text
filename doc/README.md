@@ -177,10 +177,15 @@ order,  line           type name,field name,field type,      ,     ,     , size,
 	- field1_metadata = ""
 - object2为第2个字段创建的对象 field_object2{configurableUsageAddresses,   "", 类型14, field2_metadata, 字节偏移4, 字段大小192字节}
 	- field2_metadata = MetadataArray("", 192, 24, "") -- 24个元素。
-- 第3行的field，创建 MetadataStruct("SAddressInfo", 8, 2, 0)，并将其添加到之前的meta_data._fields[-1].metadata中。
-	
+
+对于第3行的field的处理分两步：首先，解析出该field的metadata，比如这个例子里是MetadataStruct("SAddressInfo", 8, 2, 0)。然
+后再将解析出来的metadata添加到之前已经解析出来的array里的meta，这里是MetadataArray("", 192, 24, "")。
+
+**注：当前实现里对于array的解析结果，这个例子里因为SAddressInfo已经在之前定义，因此array的metadata为None**	
 
 解析举例4：非自定义类型的字段-POINTER（15）。
+
+
 
 解析举例5：非自定义类型的字段-STRUCT（17）。
 
