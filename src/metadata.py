@@ -23,6 +23,8 @@ class MetadataBasicType(object):
         datatype.StructType.BOOL:        ("_anon_bool", 1, "?"),
         datatype.StructType.FLOAT:        ("_anon_real", 4, "f"),
         datatype.StructType.DOUBLE:  ("_anon_doublereal", 8, "d"),
+
+        datatype.StructType.POINTER:  ("_anon_pointer", 4, "ptr"),
     }
 
     def __init__(self, field_struct_type):
@@ -72,19 +74,25 @@ class MetadataStruct(Metadata):
                  (self._fields == another._fields) )
 
     def add_field(self, name, type_name, field_struct_type, meta, offset, size):
-        new_field = Field(self._field_number, name, type_name, field_struct_type,
+        new_field = Field(self._parsed_field_counter, name, type_name, field_struct_type,
                           meta, offset, size)
+        self.logger.info("MetadataStruct.add_field:[%s,%s,%s,%s,%d,%d] parsed_field_number=%d _field_number=%d" %
+                         (name, type_name, field_struct_type, meta, offset, size, self._parsed_field_counter, self._field_number))
+
         self._fields.append(new_field)
         self._parsed_field_counter += 1
-        self.logger.info("MetadataStruct.add_field:[%s,%s,%s,%s,%d,%d] parsed_field_number=%d" %
-                         (name, type_name, field_struct_type, meta, offset, size, self._parsed_field_counter))
-
 
 class MetadataUnion(Metadata):
     def __init__(self, name, size, field_number):
         self._name = name
         self._size = size
         self._field_number = field_number
+
+class MetadataAlias(Metadata):
+    def __init__(self, name, size, alias_name):
+        self._name = name
+        self._size = size
+        self._alias_name = alias_name
 
 class MetadataEnum(Metadata):
     def __init__(self, name, size, constant_num):
@@ -129,3 +137,11 @@ class Field(object):
     def __str__(self):
         return ("Field(_index, _name:%s, _typename:%s, _field_struct_type:%d, _metadata:%s, _offset:%d, _size:%d)" %
                  (self._index, self._name, self._typename, self._field_struct_type, self._metadata, self._offset, self._size))
+    def __eq__(self, other):
+        return ( (self._index == other._index) and
+                 (self._name == other._name) and
+                 (self._typename == other._typename) and
+                 (self._field_struct_type == other._field_struct_type) and
+                 (self._metadata == other._metadata) and
+                 (self._offset == other._offset) and
+                 (self._size == other._size) )

@@ -138,6 +138,7 @@ class MetaDataHandler(handler.Handler):
 
     def _parse_struct(self, items):
         type_name = items[2]            # 类型名称，如 EState, int, float
+        alias_name = items[4]
         struct_type = items[5]          # 自定义类型，进一步区分enum, union, int, float
         struct_type_info = items[6]     # Enum 为 1.
         struct_size = items[8]          # 类型大小（字节）
@@ -145,9 +146,10 @@ class MetaDataHandler(handler.Handler):
 
         self.logger.info("MetaDataHandler._parse_struct:[%s]" % (items))
 
-        if struct_type == datatype.StructType.ARRAY:
-            meta_array = metadata.MetadataArray(type_name, struct_size, struct_field_number)
-            self._metadata[type_name] = meta_array
+        if alias_name != "":
+            self._metadata[type_name] = metadata.MetadataAlias(type_name, struct_size, alias_name)
+        elif struct_type == datatype.StructType.ARRAY:
+            self._metadata[type_name] = metadata.MetadataArray(type_name, struct_size, struct_field_number)
         elif struct_type == datatype.StructType.STRUCT:
             field_number_plus_array_elementnumber = items[11]
             array_field_num = field_number_plus_array_elementnumber - struct_field_number
@@ -157,16 +159,14 @@ class MetaDataHandler(handler.Handler):
                                                   array_field_num)
             self._metadata[type_name] = meta_struct
         elif struct_type == datatype.StructType.UNION:
-            meta_union = metadata.MetadataArray(type_name, struct_size, struct_field_number)
-            self._metadata[type_name] = meta_union
+            self._metadata[type_name] = metadata.MetadataArray(type_name, struct_size, struct_field_number)
         else:
             type_info = items[6]
             if type_info == datatype.StructTypeInfo.ENUM:
-                meta_enum = metadata.MetadataEnum(type_name, struct_size, struct_field_number)
-                self._metadata[type_name] = meta_enum
+                self._metadata[type_name] = metadata.MetadataEnum(type_name, struct_size, struct_field_number)
+            # include POINTER, u32 or any other user-defined alias type to build-in types
             else:
-                meta_basic_data = metadata.MetadataBasicType(type_info)
-                self._metadata[type_name] = meta_basic_data
+                self._metadata[type_name] = metadata.MetadataBasicType(struct_type)
 
         self.logger.info("MetaDataHandler._parse_struct:_metadata[%s]=%s" % (type_name, self._metadata[type_name]))
 
@@ -255,6 +255,7 @@ class MetaDataHandler(handler.Handler):
         struct_size = items[8]          # 类型大小（字节）
         struct_field_number = items[10] # 包含的成员个数，自定义类型成员个数 > 0
 
+        # 已经定义过的S，在之前已经存储下来了。
         if field_type_name != "":
             return None
         elif field_struct_type == datatype.StructType.STRUCT:

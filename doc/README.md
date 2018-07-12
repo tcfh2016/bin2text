@@ -42,6 +42,8 @@ types.dat文件里定义的行类型主要分为C, S, F, D, M五大类。
 - 定义的struct，第11项的统计会将其中包含的数组字段重复统计
 
 
+
+
    4710,    S,    EState,    ,    ,    4,    1,    0,    4,    1,    2,    0,    0,    0,    0,    1,    0,    0,    ""
       0,    1,         2,   3,   4,    5,    6,    7,    8,    9,   10,   11,   12,   13,   14,   15,   16,   17,    18
 order,  line    typename,    ,field type   tag      ,size ,     ,element    ,     ,     ,     ,     ,     ,     ,     ,
@@ -185,6 +187,46 @@ order,  line           type name,field name,field type,      ,     ,     , size,
 
 解析举例4：非自定义类型的字段-POINTER（15）。
 
+```
+11333,S,TRecoveryFunctionPtr,,,15,0,0,4,0,0,0,0,0,0,0,0,0,""
+11334,S,SFaultTypeData,,,17,0,0,40,0,10,10,0,0,0,1,0,0,""
+11335,F,SFaultTypeData,faultId,EFaultId,4,1,0,4,0,1709,0,1,0,1,1,0,9602,""
+11336,F,SFaultTypeData,faultClass,EFaultClass,4,1,4,4,0,7,0,1,0,1,1,0,11312,""
+11337,F,SFaultTypeData,faultIdTotalCounter,TCounter,4,0,8,4,0,0,0,0,0,1,1,0,11320,""
+11338,F,SFaultTypeData,blocked,TBoolean,4,0,12,4,0,0,0,0,0,1,1,0,457,""
+11339,F,SFaultTypeData,faultDelivery,EFaultDelivery,4,1,16,4,0,5,0,1,0,1,1,0,11321,""
+11340,F,SFaultTypeData,faultDetectionWindow,TCounter,4,0,20,4,0,0,0,0,0,1,1,0,11320,""
+11341,F,SFaultTypeData,faultIndFrequency,TCounter,4,0,24,4,0,0,0,0,0,1,1,0,11320,""
+11342,F,SFaultTypeData,faultIdFilterCounter,TCounter,4,0,28,4,0,0,0,0,0,1,1,0,11320,""
+11343,F,SFaultTypeData,recoveryState,ERecoveryState,4,1,32,4,0,5,0,1,0,1,1,0,11327,""
+11344,F,SFaultTypeData,recoveryFunctionPtr,TRecoveryFunctionPtr,15,0,36,4,0,0,0,0,0,1,1,0,11333,""
+```
+
+对于这些非自定义类型的字段，都会在前面预先定义。比如在 SFaultTypeData（11334） 里有 recoveryFunctionPtr（11344）它会预先
+定义好该字段的类型 TRecoveryFunctionPtr （11333）。
+
+解析得到 struct_object{SFaultTypeData, 40字节, 10个成员, 0个array成员, [object1, object2......object10]}
+
+- object1: field_object1{faultId, "EFaultId", 类型4, field1_metadata, 字节偏移0, 字段大小4字节}
+	- field1_metadata = None
+- object2: field_object2{faultId, "EFaultId", 类型4, field2_metadata, 字节偏移4, 字段大小4字节}
+	- field2_metadata = None
+- object3: field_object3{faultId, "EFaultId", 类型4, field3_metadata, 字节偏移8, 字段大小4字节}
+	- field3_metadata = None
+- object4: field_object4{faultId, "EFaultId", 类型4, field4_metadata, 字节偏移12, 字段大小4字节}
+	- field4_metadata = None
+- object5: field_object5{faultId, "EFaultId", 类型4, field5_metadata, 字节偏移16, 字段大小4字节}
+	- field5_metadata = None
+- object6: field_object6{faultId, "EFaultId", 类型4, field6_metadata, 字节偏移20, 字段大小4字节}
+	- field6_metadata = None
+- object7: field_object7{faultId, "EFaultId", 类型4, field7_metadata, 字节偏移24, 字段大小4字节}
+	- field7_metadata = None
+- object8: field_object8{faultId, "EFaultId", 类型4, field8_metadata, 字节偏移28, 字段大小4字节}
+	- field8_metadata = None
+- object9: field_object9{faultId, "EFaultId", 类型4, field9_metadata, 字节偏移32, 字段大小4字节}
+	- field9_metadata = None
+- object10: field_object10{faultId, "EFaultId", 类型15, field10_metadata, 字节偏移36, 字段大小4字节}
+	- field10_metadata = None
 
 
 解析举例5：非自定义类型的字段-STRUCT（17）。
