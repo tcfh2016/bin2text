@@ -159,7 +159,7 @@ class MetaDataHandler(handler.Handler):
                                                   array_field_num)
             self._metadata[type_name] = meta_struct
         elif struct_type == datatype.StructType.UNION:
-            self._metadata[type_name] = metadata.MetadataArray(type_name, struct_size, struct_field_number)
+            self._metadata[type_name] = metadata.MetadataUnion(type_name, struct_size, struct_field_number)
         else:
             type_info = items[6]
             if type_info == datatype.StructTypeInfo.ENUM:

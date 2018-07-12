@@ -209,30 +209,64 @@ order,  line           type name,field name,field type,      ,     ,     , size,
 
 - object1: field_object1{faultId, "EFaultId", 类型4, field1_metadata, 字节偏移0, 字段大小4字节}
 	- field1_metadata = None
-- object2: field_object2{faultId, "EFaultId", 类型4, field2_metadata, 字节偏移4, 字段大小4字节}
+- object2: field_object2{faultClass, "EFaultClass", 类型4, field2_metadata, 字节偏移4, 字段大小4字节}
 	- field2_metadata = None
-- object3: field_object3{faultId, "EFaultId", 类型4, field3_metadata, 字节偏移8, 字段大小4字节}
+- object3: field_object3{faultIdTotalCounter, "TCounter", 类型4, field3_metadata, 字节偏移8, 字段大小4字节}
 	- field3_metadata = None
-- object4: field_object4{faultId, "EFaultId", 类型4, field4_metadata, 字节偏移12, 字段大小4字节}
+- object4: field_object4{blocked, "TBoolean", 类型4, field4_metadata, 字节偏移12, 字段大小4字节}
 	- field4_metadata = None
-- object5: field_object5{faultId, "EFaultId", 类型4, field5_metadata, 字节偏移16, 字段大小4字节}
+- object5: field_object5{faultDelivery, "EFaultDelivery", 类型4, field5_metadata, 字节偏移16, 字段大小4字节}
 	- field5_metadata = None
-- object6: field_object6{faultId, "EFaultId", 类型4, field6_metadata, 字节偏移20, 字段大小4字节}
+- object6: field_object6{faultDetectionWindow, "TCounter", 类型4, field6_metadata, 字节偏移20, 字段大小4字节}
 	- field6_metadata = None
-- object7: field_object7{faultId, "EFaultId", 类型4, field7_metadata, 字节偏移24, 字段大小4字节}
+- object7: field_object7{faultIndFrequency, "TCounter", 类型4, field7_metadata, 字节偏移24, 字段大小4字节}
 	- field7_metadata = None
-- object8: field_object8{faultId, "EFaultId", 类型4, field8_metadata, 字节偏移28, 字段大小4字节}
+- object8: field_object8{faultIdFilterCounter, "TCounter", 类型4, field8_metadata, 字节偏移28, 字段大小4字节}
 	- field8_metadata = None
-- object9: field_object9{faultId, "EFaultId", 类型4, field9_metadata, 字节偏移32, 字段大小4字节}
+- object9: field_object9{recoveryState, "ERecoveryState", 类型4, field9_metadata, 字节偏移32, 字段大小4字节}
 	- field9_metadata = None
-- object10: field_object10{faultId, "EFaultId", 类型15, field10_metadata, 字节偏移36, 字段大小4字节}
+- object10: field_object10{recoveryFunctionPtr, "TRecoveryFunctionPtr", 类型15, field10_metadata, 字节偏移36, 字段大小4字节}
 	- field10_metadata = None
 
 
 解析举例5：非自定义类型的字段-STRUCT（17）。
 
+```
+37,S,SMessageHeader,,,17,0,0,16,0,5,5,0,0,0,1,0,0,""
+38,F,SMessageHeader,id,TMessageId,4,0,0,4,0,0,0,0,0,1,1,0,25,""
+39,F,SMessageHeader,receiver,SMessageAddress,17,0,4,4,0,3,0,0,0,1,1,0,29,""
+40,F,SMessageHeader,sender,SMessageAddress,17,0,8,4,0,3,0,0,0,1,1,0,29,""
+41,F,SMessageHeader,length,TMsgLength,2,0,12,2,0,0,0,0,0,1,1,0,33,""
+42,F,SMessageHeader,flags,SHeaderFlags,17,0,14,2,0,2,0,0,0,1,1,0,34,""
+```
+
+解析得到 struct_object{SMessageHeader, 16字节, 5个成员, 5个array成员, [object1, object2......object4]}
+
+- object1: field_object1{id, "TMessageId", 类型4, field1_metadata, 字节偏移0, 字段大小4字节}
+	- field1_metadata = None
+- object2: field_object2{receiver, "SMessageAddress", 类型17, field2_metadata, 字节偏移4, 字段大小4字节}
+	- field2_metadata = None
+- object3: field_object3{sender, "SMessageAddress", 类型17, field3_metadata, 字节偏移8, 字段大小4字节}
+	- field3_metadata = None
+- object4: field_object4{length, "TMsgLength", 类型2, field4_metadata, 字节偏移12, 字段大小2字节}
+	- field4_metadata = None
+- object5: field_object5{flags, "SHeaderFlags", 类型17, field5_metadata, 字节偏移14, 字段大小2字节}
+	- field5_metadata = None
+
 解析举例6：非自定义类型的字段-UNION（18）。
 
+```
+815,S,UWmpDcmCaParamsContainer,,,17,0,0,1804,0,2,2,0,0,0,1,0,0,""
+816,F,UWmpDcmCaParamsContainer,discriminator,EDiscUWmpDcmCaParamsContainer,4,1,0,4,0,2,0,1,0,1,1,0,505,""
+817,F,UWmpDcmCaParamsContainer,u,UInnerUWmpDcmCaParamsContainer,18,0,4,1800,0,2,0,0,0,1,1,0,812,""
+```
+
+解析得到 struct_object{UWmpDcmCaParamsContainer, 1804字节, 2个成员, 0个array成员, [object1, object2]}
+
+- object1: field_object1{discriminator, "EDiscUWmpDcmCaParamsContainer", 类型4, field1_metadata, 字节偏移0, 字段大小4字节}
+	- field1_metadata = None
+- object2: field_object2{u, "UInnerUWmpDcmCaParamsContainer", 类型18, field2_metadata, 字节偏移4, 字段大小1800字节}
+	- field2_metadata = None
 
 
 568	S	SMacPsL2Addresses			17	0	0	584	0	11	20	0	0	0	1	0	0

@@ -80,8 +80,43 @@ class MetaDataHandlerTestCase(unittest.TestCase):
                          self.object._metadata["SFaultTypeData"]._field_number)
         self.assertEqual(len(self.object._metadata["SFaultTypeData"]._fields), 10)
 
-        expected_field = metadata.Field(9,"recoveryFunctionPtr", "TRecoveryFunctionPtr", 15, None, 36, 4)        
+        expected_field = metadata.Field(9,"recoveryFunctionPtr", "TRecoveryFunctionPtr", 15, None, 36, 4)
         self.assertEqual(self.object._metadata["SFaultTypeData"]._fields[9], expected_field)
+
+    def test_parse_struct_with_struct_fields(self):
+        s = [37,'S',"SMessageHeader","","",17,0,0,16,0,5,5,0,0,0,1,0,0,""]
+        f1 = [38,'F',"SMessageHeader","id","TMessageId",4,0,0,4,0,0,0,0,0,1,1,0,25,""]
+        f2 = [39,'F',"SMessageHeader","receiver","SMessageAddress",17,0,4,4,0,3,0,0,0,1,1,0,29,""]
+        f3 = [40,'F',"SMessageHeader","sender","SMessageAddress",17,0,8,4,0,3,0,0,0,1,1,0,29,""]
+        f4 = [41,'F',"SMessageHeader","length","TMsgLength",2,0,12,2,0,0,0,0,0,1,1,0,33,""]
+        f5 = [42,'F',"SMessageHeader","flags","SHeaderFlags",17,0,14,2,0,2,0,0,0,1,1,0,34,""]
+
+        map(lambda x:self.object._parse_item(x), [s, f1, f2, f3, f4, f5])
+
+        self.assertEqual(self.object._metadata["SMessageHeader"]._parsed_field_counter,
+                         self.object._metadata["SMessageHeader"]._field_number)
+        self.assertEqual(len(self.object._metadata["SMessageHeader"]._fields), 5)
+
+        expected_field4 = metadata.Field(3,"length", "TMsgLength", 2, None, 12, 2)
+        self.assertEqual(self.object._metadata["SMessageHeader"]._fields[3], expected_field4)
+        expected_field5 = metadata.Field(4,"flags", "SHeaderFlags", 17, None, 14, 2)
+        self.assertEqual(self.object._metadata["SMessageHeader"]._fields[4], expected_field5)
+
+    def test_parse_struct_with_union_fields(self):
+        s = [815,'S',"UWmpDcmCaParamsContainer","","",17,0,0,1804,0,2,2,0,0,0,1,0,0,""]
+        f1 = [816,'F',"UWmpDcmCaParamsContainer","discriminator","EDiscUWmpDcmCaParamsContainer",4,1,0,4,0,2,0,1,0,1,1,0,505,""]
+        f2 = [817,'F',"UWmpDcmCaParamsContainer",'u',"UInnerUWmpDcmCaParamsContainer",18,0,4,1800,0,2,0,0,0,1,1,0,812,""]
+
+        map(lambda x:self.object._parse_item(x), [s, f1, f2])
+
+        self.assertEqual(self.object._metadata["UWmpDcmCaParamsContainer"]._parsed_field_counter,
+                         self.object._metadata["UWmpDcmCaParamsContainer"]._field_number)
+        self.assertEqual(len(self.object._metadata["UWmpDcmCaParamsContainer"]._fields), 2)
+
+        expected_field1 = metadata.Field(0,"discriminator", "EDiscUWmpDcmCaParamsContainer", 4, None, 0, 4)
+        self.assertEqual(self.object._metadata["UWmpDcmCaParamsContainer"]._fields[0], expected_field1)
+        expected_field2 = metadata.Field(1,"u", "UInnerUWmpDcmCaParamsContainer", 18, None, 4, 1800)
+        self.assertEqual(self.object._metadata["UWmpDcmCaParamsContainer"]._fields[1], expected_field2)
 
 if __name__ == '__main__':
     unittest.main()
