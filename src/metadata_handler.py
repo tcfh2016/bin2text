@@ -66,21 +66,23 @@ class MetaDataHandler(handler.Handler):
     # order,  line  message     ,                     message name,      ,     ,     ,  size,     , field extra f
     #         type,      id,                                                                       number,number,
     def _parse_message(self, items):
-        msg_id = items[2]
-        msg_name = items[4]
-        msg_size = items[8]
-        msg_field_number = items[10]
-        msg_extrafield_number = items[11]
+        id = items[2]
+        name = items[4]
+        size = items[8]
+        field_number = items[10]
+        extrafield_number = items[11]
 
         try:
-            message_id = int(msg_id, 16)
+            message_id = int(id, 16)
         except:
-            print "_parse_message: invalid msg_id %s" %msg_id
-        meta_message = metadata.MetadataMessage(msg_id, msg_name, msg_size,
-                                                msg_field_number,
-                                                msg_extrafield_number - msg_field_number)
-        assert msg_id not in self._metadata_message
-        self._metadata_message[msg_id] = meta_message
+            print "_parse_message: invalid message id %s" %id
+        message_meta = metadata.MetadataMessage(id, name, size,
+                                                field_number,
+                                                extrafield_number - field_number)
+        assert message_id not in self._metadata_message
+        self._metadata_message[message_id] = message_meta
+
+        self.logger.info("MetaDataHandler._parse_message:_metadata_message[%s]=%s" % (message_id, self._metadata_message[message_id]))
 
     #    928,    M,    43CF,    msgHeader,    SMessageHeader,    17,    0,    0,    16,    0,    5,    0,    0,    0,    1,    1,    0,    37,    ""
     #      0,    1,       2,            3,                 4,     5,    6,    7,     8,    9,   10,   11,   12,   13,   14,   15,   16,    17,    18

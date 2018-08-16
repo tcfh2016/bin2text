@@ -267,45 +267,22 @@ order,  line           type name,field name,field type,      ,     ,     , size,
 	- field1_metadata = None
 - object2: field_object2{u, "UInnerUWmpDcmCaParamsContainer", 类型18, field2_metadata, 字节偏移4, 字段大小1800字节}
 	- field2_metadata = None
-
-
-568	S	SMacPsL2Addresses			17	0	0	584	0	11	20	0	0	0	1	0	0
-569	F	SMacPsL2Addresses	numOfUeGroupsPerPool		4	0	0	4	0	0	0	0	0	1	0	0	0
-570	F	SMacPsL2Addresses	dataCtrlDlData		14	0	4	64	0	16	0	0	0	1	1	0	0
-571	F	SMacPsL2Addresses	dataCtrlDlData	TAaSysComSicad	4	0	0	4	0	0	0	0	0	2	1	0	504
-572	F	SMacPsL2Addresses	dataCtrlUl		14	0	68	64	0	16	0	0	0	1	1	0	0
-573	F	SMacPsL2Addresses	dataCtrlUl	TAaSysComSicad	4	0	0	4	0	0	0	0	0	2	1	0	504
-574	F	SMacPsL2Addresses	dataCtrlDiscard		14	0	132	64	0	16	0	0	0	1	1	0	0
-575	F	SMacPsL2Addresses	dataCtrlDiscard	TAaSysComSicad	4	0	0	4	0	0	0	0	0	2	1	0	504
-576	F	SMacPsL2Addresses	ueCtrlFeedback		14	0	196	64	0	16	0	0	0	1	1	0	0
-577	F	SMacPsL2Addresses	ueCtrlFeedback	TAaSysComSicad	4	0	0	4	0	0	0	0	0	2	1	0	504
-578	F	SMacPsL2Addresses	puschReceiveRespUSicad		14	0	260	64	0	16	0	0	0	1	1	0	0
-579	F	SMacPsL2Addresses	puschReceiveRespUSicad	TAaSysComSicad	4	0	0	4	0	0	0	0	0	2	1	0	504
-580	F	SMacPsL2Addresses	puschReceiveRespUQueue		14	0	324	64	0	16	0	0	0	1	1	0	0
-581	F	SMacPsL2Addresses	puschReceiveRespUQueue		4	0	0	4	0	0	0	0	0	2	0	0	0
-582	F	SMacPsL2Addresses	dataCtrlDlDataQueue		14	0	388	64	0	16	0	0	0	1	1	0	0
-583	F	SMacPsL2Addresses	dataCtrlDlDataQueue		4	0	0	4	0	0	0	0	0	2	0	0	0
-584	F	SMacPsL2Addresses	dataCtrlUlQueue		14	0	452	64	0	16	0	0	0	1	1	0	0
-585	F	SMacPsL2Addresses	dataCtrlUlQueue		4	0	0	4	0	0	0	0	0	2	0	0	0
-586	F	SMacPsL2Addresses	dataCtrlDiscardQueue		14	0	516	64	0	16	0	0	0	1	1	0	0
-587	F	SMacPsL2Addresses	dataCtrlDiscardQueue		4	0	0	4	0	0	0	0	0	2	0	0	0
-588	F	SMacPsL2Addresses	poolId	TPoolId	4	0	580	4	0	0	0	0	0	1	1	0	428
 				
 				
 4. 类型D
 
 -  第0项：行序号。
--  第1项：行类型，固定为C。
--  第2项：数据类型，对应定义的S。
--  第3项：字段名称
--  第4项：
--  第5项：字段tag
--  第6项：字段tag描述
+-  第1项：行类型，定义为消息，固定为D。
+-  第2项：数据类型，消息ID。
+-  第3项：
+-  第4项：消息名称。
+-  第5项：tag
+-  第6项：tag描述
 -  第7项：
--  第8项：
+-  第8项：大小
 -  第9项：
-- 第10项：字段的值
-- 第11项：字段的索引
+- 第10项：消息结构包含的成员数量
+- 第11项：消息结构包含的成员数量（额外计算数组成员）
 - 第12项：
 - 第13项：
 - 第14项：
@@ -313,6 +290,7 @@ order,  line           type name,field name,field type,      ,     ,     , size,
 - 第16项：
 - 第17项：
 
+类型D定义消息。
 
    927,    D,    43CF,    ,    PS_CA_PUCCH_RESOURCES_REQ_MSG,    23,    0,    0,    52,    0,    12,    13,    0,    0,    0,    1,    0,    0,    ""
     0,     1,       2,   3,                                4,     5,    6,    7,     8,    9,    10,    11,   12,   13,   14,   15,   16,   17,    18

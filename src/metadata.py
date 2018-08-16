@@ -117,13 +117,23 @@ class MetadataMessage(Metadata):
                 and field_offset == 0)
 
     def __init__(self, id, name, size, field_num, variable_array_field_num):
-        self.name = name
-        self.size = size
-        self.has_header = False
+        self._name = name
+        self._size = size
+        self._has_header = False
 
-        self.id = id
-        self.field_num = field_num
-        self.variable_array_field_num = variable_array_field_num
+        self._id = id
+        self._field_num = field_num
+        self._array_field_num = variable_array_field_num
+    def __str__(self):
+        return ("MetadataMessage(_id:%s, _name:%s, _size:%d, _field_number:%d, _array_field_number:%d)" %
+                          (self._id, self._name, self._size, self._field_num, self._array_field_num))
+    def __eq__(self, another):
+        return ( (self._name == another._name) and
+                 (self._size == another._size) and
+                 (self._id == another._id) and
+                 (self._field_num == another._field_num) and
+                 (self._array_field_num == another._array_field_num))
+
 
 class Field(object):
     def __init__(self, index, name, type_name, field_struct_type, meta, offset, size):

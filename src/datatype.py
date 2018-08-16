@@ -34,7 +34,7 @@ class StructType(object):
     FUNCTION      = 20
     PROCEDURE     = 21
     PROCESS       = 22
-    SIGNAL        = 23
+    Message       = 23
     TIMER         = 24
     ALARM         = 25
 
