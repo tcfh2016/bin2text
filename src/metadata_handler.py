@@ -101,15 +101,16 @@ class MetaDataHandler(handler.Handler):
         except:
             print "_parse_message_field: invalid msg_id %s" %msg_id
 
-        assert msg_id in self._metadata_message
-        metamessage = self._metadata_message[msg_id]
+        assert message_id in self._metadata_message
+        message_meta = self._metadata_message[message_id]
 
         if metadata.MetadataMessage.is_header(field_name, field_size, field_offset):
             metamessage.has_header = True
             return
 
-        self._parse_field(items, meta_message)
+        self._parse_field(items, message_meta)
 
+        self.logger.info("MetaDataHandler._parse_message_field:message_meta=%s" % (message_meta))
 
     #    90,    C,    EStatusLte,    EStatusLte_Ok,    ,    4,    7,    0,    0,    0,    0,    3,    0,    0,    1,    0,    0,    0,    ""
     #     0,    1,             2,                3,   4,    5,    6,    7,    8,    9,   10,   11,   12,   13,   14,   15,   16,   17,    18
@@ -205,15 +206,13 @@ class MetaDataHandler(handler.Handler):
 
 
     def _parse_field(self, items, meta_struct):
-        # items 对应“F”行。
+        # items 对应为“F”的处理：将所有隶属于“S”的字段收集起来。
         # meta_struct 对应从“S”行解析出来的 MetadataStruct/MetadataUnion/MetadataArray/MetadataEnum
-        # 算法目的：将所有隶属于“S”的字段收集起来。
-        # 算法逻辑：
         # 1. 递归找到最底层的“S”类型的metadata。
         # 2. 并以该metadata来进行该“F”的解析。
         # 注： 对于STRUCT取最近一个metadata（meta_data._fields[-1].metadata）是因为
         # 对于嵌套的结构体来说会在之前就定义好该S。
-        # 举例：
+
 
         bottom_2ndlevel_field_meta = self._get_field_meta(items, meta_struct, 1)
 

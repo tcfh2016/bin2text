@@ -82,6 +82,31 @@ class MetadataStruct(Metadata):
         self._fields.append(new_field)
         self._parsed_field_counter += 1
 
+class MetadataMessage(MetadataStruct):
+    __HeaderTypeName = "SMessageHeader"
+    __HeaderSize = 16
+
+    @staticmethod
+    def is_header(field_name, field_size, field_offset):
+        return (field_name == MetadataMessage.__HeaderTypeName
+                and field_size == MetadataMessage.__HeaderSize
+                and field_offset == 0)
+
+    def __init__(self, id, name, size, field_num, array_field_num):
+        super(MetadataMessage, self).__init__(name, size, field_num, array_field_num)
+        self._has_header = False
+        self._id = id
+
+    def __str__(self):
+        return ("MetadataMessage(_id:%s, _name:%s, _size:%d, _field_number:%d, _array_field_number:%d)" %
+                          (self._id, self._name, self._size, self._field_number, self._array_field_number))
+    def __eq__(self, another):
+        return ( (self._name == another._name) and
+                 (self._size == another._size) and
+                 (self._id == another._id) and
+                 (self._field_number == another._field_number) and
+                 (self._array_field_number == another._array_field_number))
+
 class MetadataUnion(Metadata):
     def __init__(self, name, size, field_number):
         self._name = name
@@ -105,35 +130,6 @@ class MetadataEnum(Metadata):
     def add_field(self, value):
         self.constants.append(value)
         self.constant_num += 1
-
-class MetadataMessage(Metadata):
-    __HeaderTypeName = "SMessageHeader"
-    __HeaderSize = 16
-
-    @staticmethod
-    def is_header(field_name, field_size, field_offset):
-        return (field_name == MetadataMessage.__HeaderTypeName
-                and field_size == MetadataMessage.__HeaderSize
-                and field_offset == 0)
-
-    def __init__(self, id, name, size, field_num, variable_array_field_num):
-        self._name = name
-        self._size = size
-        self._has_header = False
-
-        self._id = id
-        self._field_num = field_num
-        self._array_field_num = variable_array_field_num
-    def __str__(self):
-        return ("MetadataMessage(_id:%s, _name:%s, _size:%d, _field_number:%d, _array_field_number:%d)" %
-                          (self._id, self._name, self._size, self._field_num, self._array_field_num))
-    def __eq__(self, another):
-        return ( (self._name == another._name) and
-                 (self._size == another._size) and
-                 (self._id == another._id) and
-                 (self._field_num == another._field_num) and
-                 (self._array_field_num == another._array_field_num))
-
 
 class Field(object):
     def __init__(self, index, name, type_name, field_struct_type, meta, offset, size):
