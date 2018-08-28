@@ -226,7 +226,8 @@ class MetaDataHandler(handler.Handler):
         self.logger.info("MetaDataHandler._parse_field:bottom_2ndlevel_field_meta=%s" % (bottom_2ndlevel_field_meta))
         self.logger.info("MetaDataHandler._parse_field:bottom_level_field_meta=%s" % (bottom_level_field_meta))
 
-        if isinstance(bottom_2ndlevel_field_meta, (metadata.MetadataStruct)):
+        # 因为 MetadataMessage继承自 MetadataStruct，所以这里实例过滤中可以不用显式填写 MetadataMessage
+        if isinstance(bottom_2ndlevel_field_meta, (metadata.MetadataStruct, metadata.MetadataMessage)):
             field_byte_offset = items[7]
             field_size = items[8]
             bottom_2ndlevel_field_meta.add_field(field_name, field_type_name, field_struct_type, bottom_level_field_meta, field_byte_offset, field_size)
@@ -238,7 +239,7 @@ class MetaDataHandler(handler.Handler):
 
     # recursive function to get field meta data.
     def _get_field_meta(self, items, meta_data, parse_level):
-        field_level = items[14] # 该"F"在"S"中的层次。
+        field_level = items[14] # 该field在"S"/"D"中的层次。
         assert field_level < 32
 
         if field_level == parse_level:

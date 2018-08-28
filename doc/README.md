@@ -300,14 +300,92 @@ order,  line  message     ,                     message name,      ,     ,     ,
 		
 5. 类型M
 
-message defined:
+-  第0项：行序号。
+-  第1项：行类型，固定为C。
+-  第2项：数据类型，对应定义的S。
+-  第3项：字段名称
+-  第4项：字段类型
+-  第5项：字段tag，S可以代表C++里面的struct, union, enum，int, float等所有类型，由此项进行进一步标识。
+-  第6项：
+-  第7项：
+-  第8项：字段大小
+-  第9项：
+- 第10项：字段的值
+- 第11项：字段的索引
+- 第12项：
+- 第13项：
+- 第14项：字段的定义层次，也即是SConfigurableUsageAddresses ->SAddressInfo
+- 第15项：
+- 第16项：
+- 第17项：
 
-message field:		
-		#    928,    M,    43CF,    msgHeader,    SMessageHeader,    17,    0,    0,    16,    0,    5,    0,    0,    0,    1,    1,    0,    37,    ""
-    #      0,    1,       2,            3,                 4,     5,    6,    7,     8,    9,   10,   11,   12,   13,   14,   15,   16,    17,    18
-    # order,  line  message    field name,        field type,      ,     , byte   size,     ,     ,     ,     ,     ,     ,     ,     ,      ,
-    #         type,      id,                                             offset,
+类型M作为D类型的字段使用。
+
+   928,    M,    43CF,    msgHeader,    SMessageHeader,    17,    0,    0,    16,    0,    5,    0,    0,    0,    1,    1,    0,    37,    ""
+     0,    1,       2,            3,                 4,     5,    6,    7,     8,    9,   10,   11,   12,   13,   14,   15,   16,    17,    18
+order,  line  message    field name,        field type,      ,     , byte   size,     ,     ,     ,     ,     ,     ,     ,     ,      ,
+        type,      id,                                             offset,
 
 
 		
+解析举例1：自定义的类型的字段。
+
+```
+43,D,29E1,,TEST_BB_FETCH_TRACE_REQ_MSG,23,0,0,20,0,2,2,0,0,0,1,0,0,""
+44,M,29E1,msgHeader,SMessageHeader,17,0,0,16,0,5,0,0,0,1,1,0,37,""
+45,M,29E1,spare,,4,0,16,4,0,0,0,0,0,1,0,0,0,""
+```
+
+解析得到 struct_object{29E1, TEST_BB_FETCH_TRACE_REQ_MSG, 20字节, 2个成员, 0个array成员,[object1, object2}
+
+- object1为第1个字段创建的对象 field_object1{msgHeader, SMessageHeader, 类型17, field1_metadata, 字节偏移0, 字段大小16字节}
+	- field1_metadata = ""
+- object2为第2个字段创建的对象 field_object2{spare,   "",   类型4, field2_metadata, 字节偏移16, 字段大小4字节}
+	- field2_metadata = ""
+
+
+注：其中的metadata包含了对field_object里面的“类型”所做的解释，由于当前field的类型不为空，说明该类型已经在之前定义，metadata为空。
+
+解析举例2：包含有ARRAY的字段。
+
+```
+74,D,4E49,,PHY_NB_PBCH_SEND_REQ_MSG,23,0,0,48,0,9,11,0,0,0,1,0,0,""
+75,M,4E49,msgHeader,SMessageHeader,17,0,0,16,0,5,0,0,0,1,1,0,37,""
+76,M,4E49,lnCelId,TCellId,4,0,16,4,0,0,0,0,0,1,1,0,69,""
+77,M,4E49,frameNumber,TFrameNumber,4,0,20,4,0,0,0,0,0,1,1,0,70,""
+78,M,4E49,subFrameNumber,TSubFrameNumber,4,0,24,4,0,0,0,0,0,1,1,0,71,""
+79,M,4E49,sfnSubCellId,,0,0,28,1,0,0,0,0,0,1,0,0,0,""
+80,M,4E49,padding,,14,0,29,3,0,3,0,0,0,1,1,0,0,""
+81,M,4E49,padding,,0,0,0,1,0,0,0,0,0,2,0,0,0,""
+82,M,4E49,txPower,TTxPower,5,0,32,4,0,0,0,0,0,1,1,0,72,""
+83,M,4E49,tbSize,TTbSize,4,0,36,4,0,0,0,0,0,1,1,0,73,""
+84,M,4E49,data,,14,0,40,8,0,8,0,0,0,1,1,0,0,""
+85,M,4E49,data,,0,0,0,1,0,0,0,0,0,2,0,0,0,""
+```
+
+解析得到 struct_object{4E49, PHY_NB_PBCH_SEND_REQ_MSG, 48字节, 9个成员, 2个array成员, [object1, object2...object9]}
+
+- object1为第1个字段创建的对象 field_object1{msgHeader, "SMessageHeader", 类型17, field1_metadata, 字节偏移0, 字段大小16字节}
+	- field1_metadata = ""
+- object2为第2个字段创建的对象 field_object2{lnCelId, "TCellId", 类型4, field2_metadata, 字节偏移16, 字段大小4字节}
+	- field2_metadata = ""
+- object3为第3个字段创建的对象 field_object3{frameNumber, "TFrameNumber", 类型4, field3_metadata, 字节偏移20, 字段大小4字节}
+	- field3_metadata = ""
+- object4为第4个字段创建的对象 field_object4{subFrameNumber, "TSubFrameNumber", 类型4, field4_metadata, 字节偏移24, 字段大小4字节}
+	- field4_metadata = ""
+- object5为第5个字段创建的对象 field_object5{sfnSubCellId, "", 类型0, field5_metadata, 字节偏移28, 字段大小1字节}
+	- field5_metadata = ""
+- object6为第6个字段创建的对象 field_object6{padding, "", 类型14, field6_metadata, 字节偏移29, 字段大小3字节}
+	- field6_metadata = MetadataArray("", 192, 24, "") -- 24个元素。
+- object7为第7个字段创建的对象 field_object7{txPower, "TTxPower", 类型5, field7_metadata, 字节偏移32, 字段大小4字节}
+	- field7_metadata = ""
+- object8为第8个字段创建的对象 field_object8{tbSize, "TTbSize", 类型4, field8_metadata, 字节偏移36, 字段大小4字节}
+	- field8_metadata = ""
+- object9为第9个字段创建的对象 field_object9{data, "", 类型14, field9_metadata, 字节偏移40, 字段大小8字节}
+	- field9_metadata = MetadataArray("", 192, 24, "") -- 24个元素。
+
+对于第3行的field的处理分两步：首先，解析出该field的metadata，比如这个例子里是MetadataStruct("SAddressInfo", 8, 2, 0)。然
+后再将解析出来的metadata添加到之前已经解析出来的array里的meta，这里是MetadataArray("", 192, 24, "")。
+
+**注：当前实现里对于array的解析结果，这个例子里因为SAddressInfo已经在之前定义，因此array的metadata为None**	
 		
