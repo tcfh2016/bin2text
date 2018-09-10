@@ -384,6 +384,17 @@ order,  line  message    field name,        field type,      ,     , byte   size
 - object9为第9个字段创建的对象 field_object9{data, "", 类型14, field9_metadata, 字节偏移40, 字段大小8字节}
 	- field9_metadata = MetadataArray("", 192, 24, "") -- 24个元素。
 
+对于数组的定义分成了两行来进行，第 14 列定义递归层次：
+	- 80,M,4E49,padding,,14,0,29,3,0,3,0,0,0,1,1,0,0,""
+		- 层次为1的时候解析 ARRAY field vs 整个消息 的联系。
+		- 创建 ARRAY 的 metadata。
+		- 将 metadata 写入 PHY_NB_PBCH_SEND_REQ_MSG。
+		
+	- 81,M,4E49,padding,,0,0,0,1,0,0,0,0,0,2,0,0,0,""
+		- 层次为2的时候解析 ARRAY vs ARRAY元素  的联系。
+		- 创建 ARRAY元素 的 metadata。
+		- 将 metadata 写入 ARRAY metadata 里面。
+	
 对于第3行的field的处理分两步：首先，解析出该field的metadata，比如这个例子里是MetadataStruct("SAddressInfo", 8, 2, 0)。然
 后再将解析出来的metadata添加到之前已经解析出来的array里的meta，这里是MetadataArray("", 192, 24, "")。
 

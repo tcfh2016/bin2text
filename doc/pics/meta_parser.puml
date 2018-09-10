@@ -1,0 +1,47 @@
+@startuml
+
+package "MetadataTypes" #DDDDDD {
+
+MetadataBasicType --|> Metadata
+MetadataArray --|> Metadata
+MetadataStruct --|> Metadata
+MetadataMessage --|> MetadataStruct
+Field --* MetadataStruct
+MetadataUnion --|> Metadata
+MetadataAlias --|> Metadata
+MetadataEnum --|> Metadata
+
+}
+
+Metadata --* MetaDataHandler
+
+
+class MetaDataHandler {
+- _metadata_message
+- _metadata
+
++ process()
+- _parse_item()
+- _parse_message()
+- _parse_message_field()
+- _parse_constant()
+- _parse_struct()
+- _parse_struct_field()
+- _parse_field()
+- _get_field_meta()
+- _parse_field_meta()
+}
+
+class Metadata
+class MetadataBasicType
+class MetadataArray
+class MetadataStruct
+class MetadataMessage
+class MetadataUnion
+class MetadataAlias
+class MetadataEnum
+
+
+class Field
+
+@enduml
