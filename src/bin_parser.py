@@ -17,15 +17,12 @@ class Parser(object):
 
     def _parse_metadata(self):
         print "parsing meta data..."
-        self.cfg.init_meta_handler()
-
         self.metadata = self.cfg.get_metadata()
-        self.metadata_handler = self.cfg.meta_handler
+        self.__add_metadata_handler()
 
-        for h in self.metadata_handler:
-            h.process(self.metadata)
-
-        pass
+        self.__init_handler(self.metadata_handler)
+        self.__handle(self.metadata_handler, self.metadata)
+        self.__destroy_handler(self.metadata_handler)
 
     def _preparse(self):
         print "preparsing..."
@@ -39,5 +36,20 @@ class Parser(object):
         print "doing post parsing..."
         pass
 
-    def _add_metadata_parser(self):
-        self.cfg.init_metadata_parser()
+    def __add_metadata_handler(self):
+        self.cfg.init_meta_handler()
+        self.metadata_handler = self.cfg.meta_handler
+
+    def __add_message_handler(self):
+        pass
+
+    def __init_handler(self, handler_list):
+        for h in handler_list:
+            h.init()
+    def __handle(self, handler_list, message):
+        for h in handler_list:
+            h.process(message)
+
+    def __destroy_handler(self, handler_list):
+        for h in handler_list:
+            h.destroy()

@@ -1,0 +1,30 @@
+@startuml
+
+MetaDataHandler --|> Handler
+TxtCsvFormatHandler  --|> Handler
+Handler --* Parser
+
+class Parser{
+  - add_metadata_handler()
+  - add_message_handler()
+  ..
+  - init_handler()
+  - handle()
+  - destroy_handler()
+}
+
+class Handler{
+  + init()
+  + destroy()
+  + handle()
+}
+
+class MetaDataHandler{
+  + process()
+}
+
+class TxtCsvFormatHandler{
+  + process()
+}
+
+@enduml

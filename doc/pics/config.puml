@@ -1,0 +1,31 @@
+@startuml
+
+MetaDataHandler --|> Handler
+TxtCsvFormatHandler  --|> Handler
+Handler  --* Config
+
+class Config{
+  + meta_handler
+  + message_prehandler
+  + message_handler
+  + message_posthandler
+
+  + init_meta_handler()
+  + init_message_handler()
+}
+
+class Handler{
+  + init()
+  + destroy()
+  + handle()
+}
+
+class MetaDataHandler{
+  + process()
+}
+
+class TxtCsvFormatHandler{
+  + process()
+}
+
+@enduml
