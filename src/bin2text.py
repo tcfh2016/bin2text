@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import  argparse
+import  logging
 
 import  bin_config
 import  bin_parser
@@ -20,7 +21,7 @@ def parse_args():
 
     return arg_parser.parse_args()
 
-def main():
+def main():    
     opt = parse_args()
 
     cfg = bin_config.Config(opt)

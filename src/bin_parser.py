@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import pdb
 class Parser(object):
     def __init__(self, cfg):
         self.cfg = cfg
@@ -17,6 +18,7 @@ class Parser(object):
 
     def _parse_metadata(self):
         print "parsing meta data..."
+        #pdb.set_trace()
         self.metadata = self.cfg.get_metadata()
         self.__add_metadata_handler()
 
